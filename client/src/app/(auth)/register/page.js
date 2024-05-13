@@ -2,13 +2,15 @@
 
 import { Form, Formik } from "formik";
 import Link from "next/link";
-import { Input, Card, Typography, Flex, Button } from "antd";
+import { Input, Card, Typography, Flex, Button, notification } from "antd";
 import * as Yup from "yup";
 import styles from "../auth.module.css";
+import { RegisterUser } from "../../../../services/user";
 
 const { Text } = Typography;
 
 const Register = () => {
+  
   const initialValues = {
     name: "",
     email: "",
@@ -26,14 +28,25 @@ const Register = () => {
       .min(8, "Password must be at least 8 characters")
   })
 
+  const handleSubmit =  async (values) => {
+    try {
+      const res = await RegisterUser(values);
+      if(res.success) {
+        notification.success({
+          message: res.message,
+        })
+      }
+    }catch (err) {
+      console.log(err);
+    }
+  }
+
   return (
     <Card className={styles.registerForm}>
       <Formik
         initialValues={initialValues}
         validationSchema={validationSchema}
-        onSubmit={(values) => {
-          console.log(values);
-        }}
+        onSubmit={handleSubmit}
       >
         {({ errors, touched, values, handleChange, handleSubmit }) => (
           <Form onSubmit={handleSubmit}>
