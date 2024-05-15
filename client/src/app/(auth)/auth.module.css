@@ -1,19 +1,19 @@
 .authLayoutStyles {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    height: 100vh;
-    width: 100vw;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 100vh;
+  width: 100vw;
 }
 
 .registerForm {
-    width: 400px;
+  width: 400px;
 }
 
 .fullWidth {
-    width: 100%;
+  width: 100%;
 }
 
 .error {
-    border: 1px solid red;
+  border: 1px solid red;
 }
