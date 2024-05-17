@@ -17,16 +17,14 @@ const AppHeader = () => {
   const { user } = useSelector((state) => state.users);
   const dispatch = useDispatch();
 
-  const getUserInfo = () => {
+  const getUserInfo = async () => {
     try {
-
-      const response = GetCurrentUser();
+      const response = await GetCurrentUser();
       if(response.success){
         dispatch(setUser(response.data))
       }else {
         notification.error({message: response.message})
       }
-
     }catch (err) {
       notification.error({message: err.message})
     }
@@ -42,14 +40,14 @@ const AppHeader = () => {
 
   return (
     user && 
-    <Header>
+    (<Header>
       <Typography.Link href="/" level={3}>Book My Show</Typography.Link>
       <Flex>
         <Avatar style={{ backgroundColor: '#87d068' }} icon={<UserOutlined />} />
         <Typography.Text>{user.name}</Typography.Text>
         <LogoutOutlined />
       </Flex>
-    </Header>
+    </Header>)
   );
 };
 

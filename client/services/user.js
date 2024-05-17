@@ -20,8 +20,7 @@ export const RegisterUser = async (payload) => {
     );
     return response.data;
   } catch (err) {
-    console.log(err);
-    return err;
+    return err?.response?.data || err;
   }
 };
 
@@ -30,7 +29,7 @@ export const LoginUser = async (payload) => {
     const response = await axiosInstance.post("/app/v1/users/login", payload);
     return response.data;
   } catch (err) {
-    return err;
+    return err?.response?.data || err;
   }
 };
 
