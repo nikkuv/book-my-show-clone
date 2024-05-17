@@ -1,10 +1,10 @@
-const UserMondal = require("../modal/userModal");
+const UserModal = require("../modal/userModal");
 const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
 
 const registerUser = async (req, res) => {
   try {
-    const isUserExists = await UserMondal.findOne({ email: req.body.email });
+    const isUserExists = await UserModal.findOne({ email: req.body.email });
 
     if (isUserExists) {
       return res
@@ -15,7 +15,7 @@ const registerUser = async (req, res) => {
     const salt = await bcrypt.genSalt(10);
     const hashedPassword = await bcrypt.hash(req.body.password, salt);
     req.body.password = hashedPassword;
-    const user = new UserMondal(req.body);
+    const user = new UserModal(req.body);
     const response = await user.save();
     res.status(200).json({
       success: true,
@@ -29,7 +29,7 @@ const registerUser = async (req, res) => {
 
 const loginUser = async (req, res) => {
   try {
-    const isUserExists = await UserMondal.findOne({ email: req.body.email });
+    const isUserExists = await UserModal.findOne({ email: req.body.email });
     if (!isUserExists) {
       return res
         .status(200)
@@ -66,7 +66,7 @@ const loginUser = async (req, res) => {
 
 const getCurrentUser = async (req, res) => {
   try {
-    const user = await UserMondal.findById(req.body.userId).select("-password");
+    const user = await UserModal.findById(req.body.userId).select("-password");
     if (!user) {
       return res
         .status(200)
