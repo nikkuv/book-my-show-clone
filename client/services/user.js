@@ -6,9 +6,6 @@ const axiosInstance = axios.create({
     credentials: "include",
     method: "POST",
     "Content-Type": "application/json",
-    Authorization: `bearer ${
-      localStorage?.getItem("token") || ""
-    }`,
   },
 });
 
@@ -35,7 +32,11 @@ export const LoginUser = async (payload) => {
 
 export const GetCurrentUser = async () => {
   try {
-    const response = await axiosInstance.get("/app/v1/users/getCurrentUser");
+    const response = await axiosInstance.get("/app/v1/users/getCurrentUser", {
+      headers: {
+        Authorization: `bearer ${localStorage.getItem("token")}`,
+      }
+    });
     return response?.data;
   } catch (err) {
     return err?.response?.data || err;
