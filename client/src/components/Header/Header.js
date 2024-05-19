@@ -24,12 +24,10 @@ const AppHeader = () => {
       const response = await GetCurrentUser();
       if (response.success) {
         dispatch(setUser(response.data));
-        // dispatch(hideLoading());
       } else {
-        // dispatch(hideLoading());
-        // dispatch(setUser(null));
         notification.error({ message: response.message });
       }
+      // dispatch(hideLoading());
     } catch (err) {
       // dispatch(hideLoading());
       // dispatch(setUser(null));

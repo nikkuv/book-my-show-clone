@@ -1,13 +1,4 @@
-import axios from "axios";
-
-const axiosInstance = axios.create({
-  baseURL: "http://localhost:8080",
-  headers: {
-    credentials: "include",
-    method: "POST",
-    "Content-Type": "application/json",
-  },
-});
+import { axiosInstance } from "./index";
 
 export const RegisterUser = async (payload) => {
   try {
@@ -32,11 +23,7 @@ export const LoginUser = async (payload) => {
 
 export const GetCurrentUser = async () => {
   try {
-    const response = await axiosInstance.get("/app/v1/users/getCurrentUser", {
-      headers: {
-        Authorization: `bearer ${localStorage.getItem("token")}`,
-      }
-    });
+    const response = await axiosInstance.get("/app/v1/users/getCurrentUser");
     return response?.data;
   } catch (err) {
     return err?.response?.data || err;

@@ -32,7 +32,7 @@ const getAllMovies = async (req, res) => {
   }
 };
 
-const deleteMovies = async (req, res) => {
+const deleteMovie = async (req, res) => {
   try {
     await movieModel.findByIdAndDelete(req.body._id);
     res.send({
@@ -81,7 +81,7 @@ const getMovieById = async (req, res) => {
 module.exports = {
   AddMovie,
   getAllMovies,
-  deleteMovies,
+  deleteMovie,
   updateMovies,
   getMovieById,
 };
