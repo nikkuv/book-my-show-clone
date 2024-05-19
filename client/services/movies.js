@@ -23,6 +23,18 @@ export const DeleteMovie = async (movieId) => {
   }
 };
 
+export const AddMovie = async (payload) => {
+  try {
+    const response = await axiosInstance.post(
+      "/app/v1/users/admin/addMovie",
+      payload
+    );
+    return response.data;
+  } catch (err) {
+    return err.message;
+  }
+};
+
 export const UpdateMovie = async (payload) => {
   try {
     const response = await axiosInstance.patch(
