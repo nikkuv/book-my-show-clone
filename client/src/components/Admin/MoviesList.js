@@ -62,22 +62,27 @@ const MoviesList = () => {
     {
       title: "Name",
       dataIndex: "title",
+      key: "title",
     },
     {
       title: "Description",
       dataIndex: "description",
+      key: "description",
     },
     {
       title: "Duration",
       dataIndex: "duration",
+      key: "duration",
     },
     {
       title: "Genre",
       dataIndex: "genre",
+      key: "genre",
     },
     {
       title: "Language",
       dataIndex: "language",
+      key: "language",
     },
     {
       title: "Release Date",
@@ -85,6 +90,7 @@ const MoviesList = () => {
       render: (_, record) => {
         return moment(record?.releaseDate).format("DD-MM-YYYY");
       },
+      key: "releaseDate",
     },
     {
       title: "Action",
@@ -108,6 +114,7 @@ const MoviesList = () => {
           </Flex>
         );
       },
+      key: "action",
     },
   ];
 

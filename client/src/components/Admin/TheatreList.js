@@ -59,18 +59,22 @@ const TheatreList = () => {
     {
       title: "Name",
       dataIndex: "name",
+      key: "name",
     },
     {
       title: "Address",
       dataIndex: "address",
+      key: "address",
     },
     {
       title: "Phone",
       dataIndex: "phone",
+      key: "phone",
     },
     {
       title: "Email",
       dataIndex: "email",
+      key: "email",
     },
     {
       title: "Owner",
@@ -78,6 +82,7 @@ const TheatreList = () => {
       render: (_, record) => {
         return record?.owner?.name;
       },
+      key: "owner",
     },
     {
       title: "Status",
@@ -89,6 +94,7 @@ const TheatreList = () => {
           return "Pending / Blocked";
         }
       },
+      key: "isActive",
     },
     {
       title: "Action",
@@ -117,8 +123,10 @@ const TheatreList = () => {
           </Flex>
         );
       },
+      key: "action",
     },
   ];
+  
   return (
     <div>
       <Table columns={columns} dataSource={theatres} />

@@ -1,28 +1,25 @@
 import { Tabs } from "antd";
 import ProtectedRoute from "@/components/ProtectedRoute";
-import Header from "@/components/Header/Header";
 import Container from "@/components/Container/Container";
-import MoviesList from "@/components/Admin/MoviesList";
-import TheatreList from "@/components/Admin/TheatreList";
+import TheatreList from "@/components/Profile/TheatreList";
 
-const Admin = () => {
-
+const Profile = () => {
+ 
   const tabItems = [
     {
       key: "1",
-      label: "Movies",
-      children: <MoviesList />,
+      label: "Bookings",
+      children: "Content of Tab Pane 1",
     },
     {
       key: "2",
-      label: "Theatres",
+      label: "Apply for theatre",
       children: <TheatreList />,
     },
   ];
 
   return (
     <ProtectedRoute>
-      <Header />
       <Container>
         <Tabs
           defaultActiveKey="1"
@@ -33,4 +30,4 @@ const Admin = () => {
   );
 };
 
-export default Admin;
+export default Profile;

@@ -187,24 +187,24 @@ const MovieForm = ({
                         errors.genre && touched.genre ? styles.error : null
                       }
                     >
-                      <Option value="">Select Genre</Option>
-                      <Option value="Action">Action</Option>
-                      <Option value="Adventure">Adventure</Option>
-                      <Option value="Animation">Animation</Option>
-                      <Option value="Comedy">Comedy</Option>
-                      <Option value="Crime">Crime</Option>
-                      <Option value="Documentary">Documentary</Option>
-                      <Option value="Drama">Drama</Option>
-                      <Option value="Fantasy">Fantasy</Option>
-                      <Option value="History">History</Option>
-                      <Option value="Horror">Horror</Option>
-                      <Option value="Music">Music</Option>
-                      <Option value="Mystery">Mystery</Option>
-                      <Option value="Romance">Romance</Option>
-                      <Option value="Science Fiction">Science Fiction</Option>
-                      <Option value="Thriller">Thriller</Option>
-                      <Option value="War">War</Option>
-                      <Option value="Western">Western</Option>
+                      <Select.Option value="">Select Genre</Select.Option>
+                      <Select.Option value="Action">Action</Select.Option>
+                      <Select.Option value="Adventure">Adventure</Select.Option>
+                      <Select.Option value="Animation">Animation</Select.Option>
+                      <Select.Option value="Comedy">Comedy</Select.Option>
+                      <Select.Option value="Crime">Crime</Select.Option>
+                      <Select.Option value="Documentary">Documentary</Select.Option>
+                      <Select.Option value="Drama">Drama</Select.Option>
+                      <Select.Option value="Fantasy">Fantasy</Select.Option>
+                      <Select.Option value="History">History</Select.Option>
+                      <Select.Option value="Horror">Horror</Select.Option>
+                      <Select.Option value="Music">Music</Select.Option>
+                      <Select.Option value="Mystery">Mystery</Select.Option>
+                      <Select.Option value="Romance">Romance</Select.Option>
+                      <Select.Option value="ScienceFiction">Science Fiction</Select.Option>
+                      <Select.Option value="Thriller">Thriller</Select.Option>
+                      <Select.Option value="War">War</Select.Option>
+                      <Select.Option value="Western">Western</Select.Option>
                     </Select>
                     {errors.genre && touched.genre && (
                       <Text type="danger">{errors.genre}</Text>
@@ -225,11 +225,11 @@ const MovieForm = ({
                           : null
                       }
                     >
-                      <Option value="">Select language</Option>
-                      <Option value="English">English</Option>
-                      <Option value="Hindi">Hindi</Option>
-                      <Option value="French">French</Option>
-                      <Option value="Spanish">Spanish</Option>
+                      <Select.Option value="">Select language</Select.Option>
+                      <Select.Option value="English">English</Select.Option>
+                      <Select.Option value="Hindi">Hindi</Select.Option>
+                      <Select.Option value="French">French</Select.Option>
+                      <Select.Option value="Spanish">Spanish</Select.Option>
                     </Select>
                     {errors.language && touched.language && (
                       <Text type="danger">{errors.language}</Text>

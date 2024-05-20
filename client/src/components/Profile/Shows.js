@@ -131,6 +131,7 @@ const Shows = ({ openShowsModal, setOpenShowsModal, theatre }) => {
     {
       title: "Show Name",
       dataIndex: "name",
+      key: "name",
     },
     {
       title: "Date",
@@ -138,10 +139,12 @@ const Shows = ({ openShowsModal, setOpenShowsModal, theatre }) => {
       render: (text, record) => {
         return moment(text).format("MMM DD YYYY");
       },
+      key: "date",
     },
     {
       title: "Time",
       dataIndex: "time",
+      key: "time",
     },
     {
       title: "Movie",
@@ -149,14 +152,17 @@ const Shows = ({ openShowsModal, setOpenShowsModal, theatre }) => {
       render: (text, record) => {
         return record.movie.title;
       },
+      key: "movie",
     },
     {
       title: "Ticket Price",
       dataIndex: "ticketPrice",
+      key: "ticketPrice",
     },
     {
       title: "Total Seats",
       dataIndex: "totalSeats",
+      key: "totalSeats",
     },
     {
       title: "Available Seats",
@@ -164,6 +170,7 @@ const Shows = ({ openShowsModal, setOpenShowsModal, theatre }) => {
       render: (text, record) => {
         return record.totalSeats - record.bookedSeats.length;
       },
+      key: "availableSeats",
     },
     {
       title: "Action",
@@ -179,6 +186,7 @@ const Shows = ({ openShowsModal, setOpenShowsModal, theatre }) => {
           </>
         );
       },
+      key: "action",
     },
   ];
 

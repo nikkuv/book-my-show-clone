@@ -10,7 +10,7 @@ import {
 } from "../../../services/theatre";
 import { useDispatch, useSelector } from "react-redux";
 import TheatreForm from "./TheatreForm";
-import Shows from "./shows";
+import Shows from "./Shows";
 
 const { Text, Title } = Typography;
 
@@ -63,18 +63,22 @@ const TheatreList = () => {
     {
       title: "Name",
       dataIndex: "name",
+      key: "name",
     },
     {
       title: "Address",
       dataIndex: "address",
+      key: "address",
     },
     {
       title: "Phone",
       dataIndex: "phone",
+      key: "phone",
     },
     {
       title: "Email",
       dataIndex: "email",
+      key: "email",
     },
     {
       title: "Status",
@@ -86,6 +90,7 @@ const TheatreList = () => {
           return "Pending / Blocked";
         }
       },
+      key: "isActive",
     },
     {
       title: "Action",
@@ -120,6 +125,7 @@ const TheatreList = () => {
           </Flex>
         );
       },
+      key: "action",
     },
   ];
 
