@@ -16,4 +16,9 @@
 
 .error {
   border: 1px solid red;
+  border-radius: 4px;
+}
+
+.marginTop {
+  margin-top: 1rem;
 }

@@ -3,6 +3,7 @@ const cors = require('cors');
 require('dotenv').config();
 const userRouter = require("./routes/userRouter");
 const movieRouter = require("./routes/movieRouter");
+const theatreRouter = require("./routes/theatreRouter");
 const app = express();
 
 app.use(cors());
@@ -12,6 +13,7 @@ app.use(express.json());
 
 app.use("/app/v1/users", userRouter);
 app.use("/app/v1/users/admin", movieRouter);
+app.use("/app/v1/users/theatres", theatreRouter);
 
 app.get('/', (req, res) => {
     res.send("Hello World");

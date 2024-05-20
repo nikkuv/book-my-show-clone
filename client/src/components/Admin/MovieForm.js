@@ -109,9 +109,8 @@ const MovieForm = ({
           values,
           handleChange,
           setFieldValue,
-          handleSubmit,
         }) => (
-          <Form onSubmit={handleSubmit}>
+          <Form>
             <Flex vertical gap={16} align="center" justify="center">
               <Row className={styles.fullWidth}>
                 <Col className={styles.fullWidth}>

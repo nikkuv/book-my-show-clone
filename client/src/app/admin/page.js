@@ -1,16 +1,11 @@
-"use client";
-
 import { Tabs } from "antd";
 import ProtectedRoute from "@/components/ProtectedRoute";
 import Header from "@/components/Header/Header";
 import Container from "@/components/Container/Container";
 import MoviesList from "@/components/Admin/MoviesList";
+import TheatreList from "@/components/Admin/TheatreList";
 
 const Admin = () => {
-
-  const handleTabsChange = (key) => {
-    console.log(key);
-  };
 
   const tabItems = [
     {
@@ -21,7 +16,7 @@ const Admin = () => {
     {
       key: "2",
       label: "Theatres",
-      children: "Content of Tab Pane 2",
+      children: <TheatreList />,
     },
   ];
 
@@ -32,7 +27,6 @@ const Admin = () => {
         <Tabs
           defaultActiveKey="1"
           items={tabItems}
-          onChange={handleTabsChange}
         />
       </Container>
     </ProtectedRoute>
