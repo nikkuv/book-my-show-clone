@@ -283,7 +283,7 @@ const Shows = ({ openShowsModal, setOpenShowsModal, theatre }) => {
                       }
                     >
                       {movies.map((movie) => (
-                        <option value={movie._id}>{movie.title}</option>
+                        <option key={movie._id} value={movie._id}>{movie.title}</option>
                       ))}
                     </Select>
                     {errors.movie && touched.movie && (
