@@ -1,4 +1,4 @@
-const UserModal = require("../modal/userModal");
+const UserModal = require("../models/userModal");
 const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
 
@@ -48,10 +48,19 @@ const loginUser = async (req, res) => {
         .json({ success: false, message: "Invalid Password" });
     } else {
       const token = jwt.sign(
-        { userId: isUserExists._id },
+        { userId: isUserExists._id, isAdmin: isUserExists.isAdmin },
         process.env.JWT_SECRET,
         { expiresIn: "1d" }
       );
+
+      res.cookie("token", token, {
+        httpOnly: true,
+        maxAge: 24 * 60 * 60 * 1000, // 1 day
+        // TODO: read about these parameters for security
+        // secure: true, // Uncomment in production (requires HTTPS)
+        // sameSite: 'strict'
+      });
+
       res.status(200).json({
         success: true,
         data: isUserExists,
@@ -62,6 +71,14 @@ const loginUser = async (req, res) => {
   } catch (err) {
     res.status(500).json({ success: false, message: err.message });
   }
+};
+
+const logoutUser = (req, res) => {
+  res.cookie("token", "", {
+    httpOnly: true,
+    expires: new Date(0)
+  });
+  res.status(200).json({ success: true, message: "Logged out successfully" });
 };
 
 const getCurrentUser = async (req, res) => {
@@ -78,4 +95,4 @@ const getCurrentUser = async (req, res) => {
   }
 };
 
-module.exports = { registerUser, loginUser, getCurrentUser };
+module.exports = { registerUser, loginUser, getCurrentUser, logoutUser };

@@ -23,8 +23,17 @@ export const LoginUser = async (payload) => {
 
 export const GetCurrentUser = async () => {
   try {
-    const response = await axiosInstance.get("/app/v1/users/getCurrentUser");
+    const response = await axiosInstance.get("/app/v1/users/get-current-user");
     return response?.data;
+  } catch (err) {
+    return err?.response?.data || err;
+  }
+};
+
+export const LogoutUser = async () => {
+  try {
+    const response = await axiosInstance.post("/app/v1/users/logout");
+    return response.data;
   } catch (err) {
     return err?.response?.data || err;
   }

@@ -11,18 +11,18 @@ const {
   getShowById,
 } = require("../controller/theatreController");
 
-const { validateJWTToken } = require("../middleware/authmiddleware");
+const { validateJWTToken, validateAdmin } = require("../middleware/authmiddleware");
 const theatreRouter = require("express").Router();
 
-theatreRouter.post("/add-theatre", validateJWTToken, addTheatre);
-theatreRouter.post("/update-theatre", validateJWTToken, updateTheatre);
-theatreRouter.post("/delete-theatre", validateJWTToken, deleteTheatre);
-theatreRouter.get("/get-all-theatres", validateJWTToken, getAllTheatres);
-theatreRouter.post("/add-shows", validateJWTToken, addShowToTheatre);
-theatreRouter.post("/delete-show", validateJWTToken, deleteShow);
+theatreRouter.post("/add-theatre", validateAdmin, addTheatre);
+theatreRouter.post("/update-theatre", validateAdmin, updateTheatre);
+theatreRouter.post("/delete-theatre", validateAdmin, deleteTheatre);
+theatreRouter.get("/get-all-theatres", validateAdmin, getAllTheatres);
+theatreRouter.post("/add-shows", validateAdmin, addShowToTheatre);
+theatreRouter.post("/delete-show", validateAdmin, deleteShow);
 theatreRouter.post(
   "/get-all-theatres-by-owner",
-  validateJWTToken,
+  validateAdmin,
   getAllTheatresByOwnerId
 );
 theatreRouter.post(
@@ -30,5 +30,12 @@ theatreRouter.post(
   validateJWTToken,
   getAllShowsByTheatre
 );
+theatreRouter.post(
+  "/get-all-theatres-by-movie",
+  validateJWTToken,
+  getAllTheatresByMovie
+);
+theatreRouter.post("/get-show-by-id", validateJWTToken, getShowById);
 
 module.exports = theatreRouter;
+

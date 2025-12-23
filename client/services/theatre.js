@@ -100,7 +100,7 @@ export const DeleteShow = async (payload) => {
 export const GetAllTheatresByMovie = async (payload) => {
   try {
     const response = await axiosInstance.post(
-      "/app/v1/users/theatres/getAllTheatresByMovie",
+      "/app/v1/users/theatres/get-all-theatres-by-movie",
       payload
     );
     return response.data;
@@ -112,7 +112,7 @@ export const GetAllTheatresByMovie = async (payload) => {
 export const GetShowById = async (payload) => {
   try {
     const response = await axiosInstance.post(
-      "/app/v1/users/theatres/getShowById",
+      "/app/v1/users/theatres/get-show-by-id",
       payload
     );
     return response.data;

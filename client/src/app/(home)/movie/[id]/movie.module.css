@@ -1,0 +1,96 @@
+.container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 24px;
+}
+
+.loadingContainer {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 400px;
+}
+
+.movieHeader {
+  background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+  padding: 32px;
+  border-radius: 16px;
+  color: white;
+}
+
+.poster {
+  width: 100%;
+  max-width: 280px;
+  border-radius: 12px;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.3);
+}
+
+.movieMeta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin: 16px 0;
+}
+
+.description {
+  color: rgba(255, 255, 255, 0.85);
+  font-size: 16px;
+  line-height: 1.6;
+  margin-top: 16px;
+}
+
+.dateSection {
+  padding: 16px 0;
+}
+
+.theatreSection {
+  padding: 16px 0;
+}
+
+.theatreList {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.theatreCard {
+  border-radius: 12px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+}
+
+.theatreInfo {
+  margin-bottom: 16px;
+}
+
+.showTimes {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+}
+
+.showButton {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 12px 24px;
+  height: auto;
+  border: 2px solid #1890ff;
+  border-radius: 8px;
+  transition: all 0.3s ease;
+}
+
+.showButton:hover {
+  background-color: #1890ff;
+  color: white;
+  transform: translateY(-2px);
+}
+
+.price {
+  font-size: 12px;
+  color: #52c41a;
+  margin-top: 4px;
+}
+
+.showButton:hover .price {
+  color: #b7eb8f;
+}

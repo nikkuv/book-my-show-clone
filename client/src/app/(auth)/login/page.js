@@ -7,11 +7,14 @@ import { Input, Card, Typography, Flex, Button, notification } from "antd";
 import * as Yup from "yup";
 import styles from "../auth.module.css";
 import { LoginUser } from "../../../../services/user";
+import { useDispatch } from "react-redux";
+import { setUser } from "@/redux/usersSlice";
 
 const { Text } = Typography;
 
 const Login = () => {
   const router = useRouter();
+  const dispatch = useDispatch();
 
   const initialValues = {
     email: "",
@@ -34,8 +37,12 @@ const Login = () => {
         notification.success({
           message: res.message,
         });
-        localStorage.setItem("token", res.token);
-        router.push("/");
+        dispatch(setUser(res.data));
+        if (res.data.isAdmin) {
+          router.push("/admin");
+        } else {
+          router.push("/");
+        }
       } else {
         notification.error({
           message: res.message,

@@ -1,4 +1,4 @@
-const movieModel = require("../modal/movieModal");
+const movieModel = require("../models/movieModal");
 
 const AddMovie = async (req, res) => {
   try {

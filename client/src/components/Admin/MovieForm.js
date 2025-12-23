@@ -16,6 +16,7 @@ import * as Yup from "yup";
 import moment from "moment";
 import styles from "../../app/(auth)/auth.module.css";
 import { AddMovie, UpdateMovie } from "../../../services/movies";
+import { UploadImage } from "../../../services/common";
 import { useDispatch } from "react-redux";
 import { showLoading, hideLoading } from "@/redux/loaderSlice";
 
@@ -33,18 +34,18 @@ const MovieForm = ({
 
   const initialValues = formType === "edit"
     ? {
-        ...selectedMovie,
-        releaseDate: selectedMovie.releaseDate ? moment(selectedMovie.releaseDate).format("YYYY-MM-DD") : null,
-      }
+      ...selectedMovie,
+      releaseDate: selectedMovie.releaseDate ? moment(selectedMovie.releaseDate).format("YYYY-MM-DD") : null,
+    }
     : {
-        title: "",
-        description: "",
-        duration: "",
-        genre: "",
-        language: "",
-        releaseDate: null,
-        poster: "",
-      };
+      title: "",
+      description: "",
+      duration: "",
+      genre: "",
+      language: "",
+      releaseDate: null,
+      poster: "",
+    };
 
   const validationSchema = Yup.object({
     title: Yup.string().required("Title is required"),
@@ -57,7 +58,7 @@ const MovieForm = ({
     language: Yup.string().required("Language is required"),
     releaseDate: Yup.string().required("Release Date is required"),
     poster: Yup.string().required("Poster URL is required").url("Invalid URL"),
-  }); 
+  });
 
   const handleSubmit = async (values) => {
     console.log(values);
@@ -263,15 +264,48 @@ const MovieForm = ({
                 <Col>
                   <Flex vertical gap={8} className={styles.fullWidth}>
                     <Text strong>Poster URL</Text>
-                    <Input
-                      name="poster"
-                      placeholder="Poster URL"
-                      value={values.poster}
-                      onChange={handleChange}
-                      className={
-                        errors.poster && touched.poster ? styles.error : null
-                      }
-                    />
+                    <Flex gap={8}>
+                      <Input
+                        name="poster"
+                        placeholder="Poster URL"
+                        value={values.poster}
+                        onChange={handleChange}
+                        className={
+                          errors.poster && touched.poster ? styles.error : null
+                        }
+                      />
+                      <Button
+                        type="button"
+                        onClick={() => {
+                          const input = document.createElement("input");
+                          input.type = "file";
+                          input.accept = "image/*";
+                          input.onchange = async (e) => {
+                            const file = e.target.files[0];
+                            if (file) {
+                              const formData = new FormData();
+                              formData.append("image", file);
+                              dispatch(showLoading());
+                              const response = await UploadImage(formData);
+                              dispatch(hideLoading());
+                              if (response.success) {
+                                setFieldValue("poster", response.data);
+                                notification.success({
+                                  message: response.message,
+                                });
+                              } else {
+                                notification.error({
+                                  message: response.message,
+                                });
+                              }
+                            }
+                          };
+                          input.click();
+                        }}
+                      >
+                        Upload Image
+                      </Button>
+                    </Flex>
                     {errors.poster && touched.poster && (
                       <Text type="danger">{errors.poster}</Text>
                     )}

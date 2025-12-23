@@ -1,9 +1,10 @@
-const Theatre = require("../modal/theatreModal");
-const show = require("../modal/showModal");
-const showModel = require("../modal/showModal");
+const Theatre = require("../models/theatreModal");
+const show = require("../models/showModal");
+const showModel = require("../models/showModal");
 
 const addTheatre = async (req, res) => {
   try {
+    req.body.owner = req.body.userId;
     const newTheatre = new Theatre(req.body);
     await newTheatre.save();
     res.send({
@@ -66,6 +67,7 @@ const getAllTheatres = async (req, res) => {
 
 const getAllTheatresByOwnerId = async (req, res) => {
   try {
+    req.body.owner = req.body.userId;
     const theatres = await Theatre.find({ owner: req.body.owner });
     res.send({
       success: true,

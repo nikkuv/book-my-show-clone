@@ -1,0 +1,47 @@
+# API Documentation
+BookMyShow_API.postman_collection.json
+server/swagger-docs.js
+
+# Dependencies
+node_modules/
+**/node_modules/
+
+# Next.js
+.next/
+**/.next/
+client/.next/
+out/
+**/out/
+
+# Production
+build/
+**/build/
+dist/
+**/dist/
+
+# Testing/Coverage
+coverage/
+**/coverage/
+
+# Environment Files
+.env
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+**/.env*
+
+# Logs
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Misc
+.DS_Store
+*.pem
+*.tsbuildinfo
+next-env.d.ts
+.vercel
+.pnp
+.pnp.js
+.yarn/install-state.gz

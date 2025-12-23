@@ -1,0 +1,80 @@
+.container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 24px;
+}
+
+.loadingContainer {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 400px;
+}
+
+.bookingCard {
+    border-radius: 12px;
+    overflow: hidden;
+    height: 100%;
+}
+
+.cardHeader {
+    display: flex;
+    gap: 16px;
+    margin-bottom: 16px;
+}
+
+.poster {
+    width: 80px;
+    height: 120px;
+    object-fit: cover;
+    border-radius: 8px;
+}
+
+.movieDetails {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.movieDetails h5 {
+    margin: 0;
+}
+
+.bookingDetails {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    padding: 12px 0;
+    border-top: 1px solid #f0f0f0;
+    border-bottom: 1px solid #f0f0f0;
+}
+
+.detailRow {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    color: #666;
+}
+
+.seatsInfo {
+    padding: 12px 0;
+}
+
+.footer {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding-top: 12px;
+    border-top: 1px solid #f0f0f0;
+}
+
+.amount {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+}
+
+.price {
+    font-size: 18px;
+    color: #52c41a;
+}
