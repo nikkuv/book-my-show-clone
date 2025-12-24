@@ -103,11 +103,18 @@ const cancelBooking = async (req, res) => {
     }
 };
 
-const stripe = require("stripe")(process.env.STRIPE_SECRET_KEY);
-
 // makePayment - Create Stripe Payment Intent
 const makePayment = async (req, res) => {
     try {
+        // Lazy initialization of Stripe - only when makePayment is called
+        if (!process.env.STRIPE_SECRET_KEY) {
+            return res.status(500).send({
+                success: false,
+                message: "Stripe API key is not configured. Please set STRIPE_SECRET_KEY in your environment variables.",
+            });
+        }
+
+        const stripe = require("stripe")(process.env.STRIPE_SECRET_KEY);
         const { amount } = req.body;
         const paymentIntent = await stripe.paymentIntents.create({
             amount: amount,
