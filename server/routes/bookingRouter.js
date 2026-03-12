@@ -1,6 +1,7 @@
 const express = require("express");
 const bookingRouter = express.Router();
 const {
+    blockSeats,
     bookSeats,
     getBookingsByUser,
     cancelBooking,
@@ -8,7 +9,10 @@ const {
 } = require("../controller/bookingController");
 const { validateJWTToken } = require("../middleware/authmiddleware");
 
-// Book seats for a show
+// Block seats temporarily (10 minutes) - called when user selects seats
+bookingRouter.post("/block", validateJWTToken, blockSeats);
+
+// Book seats for a show - called after payment is completed
 bookingRouter.post("/book-seats", validateJWTToken, bookSeats);
 
 // Get all bookings for current user

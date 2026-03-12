@@ -31,6 +31,16 @@ const showSchema = new mongoose.Schema(
       type: Array,
       default: [],
     },
+    blockedSeats: {
+      type: [
+        {
+          seat: String,
+          userId: mongoose.Schema.Types.ObjectId,
+          blockedAt: Date,
+        },
+      ],
+      default: [],
+    },
     theatre: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "theatre",
