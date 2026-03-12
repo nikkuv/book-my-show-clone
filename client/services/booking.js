@@ -1,6 +1,19 @@
 import { axiosInstance } from ".";
 
-// Book seats for a show
+// Block seats temporarily (10 min) - call before opening payment
+export const BlockSeats = async (payload) => {
+    try {
+        const response = await axiosInstance.post(
+            "/app/v1/bookings/block",
+            payload
+        );
+        return response.data;
+    } catch (error) {
+        return error.response?.data || { success: false, message: error.message };
+    }
+};
+
+// Book seats for a show (after payment success)
 export const BookSeats = async (payload) => {
     try {
         const response = await axiosInstance.post(

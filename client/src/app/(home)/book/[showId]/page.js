@@ -1,7 +1,8 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useState, useMemo } from "react";
 import { useParams, useRouter } from "next/navigation";
+import { useSelector } from "react-redux";
 import {
     Typography,
     Card,
@@ -20,7 +21,7 @@ import {
 } from "@ant-design/icons";
 import dayjs from "dayjs";
 import { GetShowById } from "../../../../../services/theatre";
-import { BookSeats } from "../../../../../services/booking";
+import { BlockSeats, BookSeats } from "../../../../../services/booking";
 import SeatSelection from "@/components/Booking/SeatSelection";
 import ProtectedRoute from "@/components/ProtectedRoute";
 import Header from "@/components/Header/Header";
@@ -36,9 +37,12 @@ const stripePromise = loadStripe(
     process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY || ""
 );
 
+const BLOCK_DURATION_MINUTES = 10;
+
 export default function BookingPage() {
     const params = useParams();
     const router = useRouter();
+    const { user } = useSelector((state) => state.users);
     const [show, setShow] = useState(null);
     const [selectedSeats, setSelectedSeats] = useState([]);
     const [loading, setLoading] = useState(true);
@@ -66,12 +70,34 @@ export default function BookingPage() {
         fetchShow();
     }, [params.showId]);
 
-    const handleBookClick = () => {
+    const handleBookClick = async () => {
         if (selectedSeats.length === 0) {
             notification.warning({ message: "Please select at least one seat" });
             return;
         }
-        setIsPaymentModalOpen(true);
+        if (!user?._id) {
+            notification.error({ message: "Please log in to continue" });
+            return;
+        }
+        try {
+            const blockResponse = await BlockSeats({
+                showId: params.showId,
+                seats: selectedSeats,
+                userId: user._id,
+            });
+            if (!blockResponse.success) {
+                notification.error({
+                    message: blockResponse.message || "Could not reserve seats",
+                    description: blockResponse.unavailableSeats
+                        ? `Seats ${blockResponse.unavailableSeats.join(", ")} are no longer available.`
+                        : undefined,
+                });
+                return;
+            }
+            setIsPaymentModalOpen(true);
+        } catch (err) {
+            notification.error({ message: err.message || "Failed to block seats" });
+        }
     };
 
     const onPaymentSuccess = async (transactionId) => {
@@ -97,6 +123,21 @@ export default function BookingPage() {
     };
 
     const totalAmount = selectedSeats.length * (show?.ticketPrice || 0);
+
+    const unavailableSeats = useMemo(() => {
+        if (!show) return [];
+        const booked = show.bookedSeats || [];
+        const blockedByOthers = (show.blockedSeats || [])
+            .filter((b) => {
+                const blockedAt = new Date(b.blockedAt).getTime();
+                const expiry = BLOCK_DURATION_MINUTES * 60 * 1000;
+                const isExpired = Date.now() - blockedAt > expiry;
+                const isCurrentUser = user && b.userId && String(b.userId) === String(user._id);
+                return !isExpired && !isCurrentUser;
+            })
+            .map((b) => b.seat);
+        return [...new Set([...booked, ...blockedByOthers])];
+    }, [show, user]);
 
     if (loading) {
         return (
@@ -179,7 +220,7 @@ export default function BookingPage() {
                         <Title level={4}>Select Your Seats</Title>
                         <SeatSelection
                             totalSeats={show.totalSeats}
-                            bookedSeats={show.bookedSeats || []}
+                            bookedSeats={unavailableSeats}
                             selectedSeats={selectedSeats}
                             onSeatSelect={setSelectedSeats}
                         />

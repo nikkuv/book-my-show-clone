@@ -2,14 +2,14 @@ import { Tabs } from "antd";
 import ProtectedRoute from "@/components/ProtectedRoute";
 import Container from "@/components/Container/Container";
 import TheatreList from "@/components/Profile/TheatreList";
+import BookingsList from "@/components/Booking/BookingsList";
 
 const Profile = () => {
- 
   const tabItems = [
     {
       key: "1",
       label: "Bookings",
-      children: "Content of Tab Pane 1",
+      children: <BookingsList />,
     },
     {
       key: "2",

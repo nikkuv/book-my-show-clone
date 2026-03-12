@@ -261,14 +261,31 @@ const getBookingsByUser = async (req, res) => {
     }
 };
 
-// cancelBooking - Cancel a booking and release seats
+// cancelBooking - Cancel a booking and release seats (only upcoming shows)
 const cancelBooking = async (req, res) => {
     try {
         const { bookingId } = req.body;
 
-        const booking = await bookingModel.findById(bookingId);
+        const booking = await bookingModel.findById(bookingId).populate("show", "date time");
         if (!booking) {
             return res.status(404).send({ success: false, message: "Booking not found" });
+        }
+
+        // Only allow cancelling upcoming shows
+        const showDateTime = new Date(booking.show.date);
+        const [timeMatch, hour, min, period] = (booking.show.time || "").match(/(\d{1,2}):(\d{2})\s*(AM|PM)?/i) || [];
+        if (timeMatch) {
+            let h = parseInt(hour, 10);
+            const m = parseInt(min, 10);
+            if (period && period.toUpperCase() === "PM" && h < 12) h += 12;
+            if (period && period.toUpperCase() === "AM" && h === 12) h = 0;
+            showDateTime.setHours(h, m, 0, 0);
+        }
+        if (showDateTime <= new Date()) {
+            return res.status(400).send({
+                success: false,
+                message: "Cannot cancel a past show",
+            });
         }
 
         // Update booking status

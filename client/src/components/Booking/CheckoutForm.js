@@ -70,7 +70,7 @@ const CheckoutForm = ({ totalAmount, onSuccess }) => {
                 loading={loading}
                 disabled={!stripe}
             >
-                Pay ${totalAmount}
+                Pay ₹{totalAmount}
             </Button>
         </form>
     );
