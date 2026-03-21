@@ -1,7 +1,134 @@
 .header {
-  background-color: #fff;
-  border-bottom: 1px solid #ddd;
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  background: #fff;
+  box-shadow: 0 1px 6px rgba(0, 0, 0, 0.06), 0 2px 4px rgba(0, 0, 0, 0.04);
+}
+
+.headerInner {
+  max-width: 1280px;
+  margin: 0 auto;
+  padding: 0 24px;
+  height: 64px;
   display: flex;
-  justify-content: space-between;
   align-items: center;
+  gap: 24px;
+}
+
+/* ── Logo ── */
+.logo {
+  display: flex;
+  align-items: baseline;
+  cursor: pointer;
+  text-decoration: none;
+  font-size: 22px;
+  font-weight: 700;
+  letter-spacing: -0.5px;
+  flex-shrink: 0;
+  line-height: 1;
+  user-select: none;
+}
+
+.logoBook {
+  color: #333;
+}
+
+.logoMy {
+  color: #fff;
+  background: #f84464;
+  border-radius: 4px;
+  padding: 1px 4px;
+  margin: 0 2px;
+  font-size: 16px;
+}
+
+.logoShow {
+  color: #333;
+}
+
+/* ── Search ── */
+.searchWrapper {
+  flex: 1;
+  max-width: 560px;
+}
+
+.searchInput {
+  border-radius: 6px !important;
+  background: #f5f5f5 !important;
+  border: none !important;
+}
+
+.searchInput input {
+  background: transparent !important;
+}
+
+.searchInput:hover,
+.searchInput:focus-within {
+  background: #f0f0f0 !important;
+}
+
+/* ── Right controls ── */
+.controls {
+  margin-left: auto;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex-shrink: 0;
+}
+
+.userBtn {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 6px 12px;
+  border-radius: 6px;
+  transition: background 0.15s;
+}
+
+.userBtn:hover {
+  background: #f5f5f5;
+}
+
+.userName {
+  font-size: 14px;
+  font-weight: 500;
+  color: #333;
+  white-space: nowrap;
+}
+
+.signInBtn {
+  background: #f84464 !important;
+  border-color: #f84464 !important;
+  border-radius: 6px !important;
+  font-weight: 600;
+  height: 36px;
+  padding: 0 24px;
+}
+
+.signInBtn:hover {
+  background: #dc3558 !important;
+  border-color: #dc3558 !important;
+}
+
+@media (max-width: 640px) {
+  .headerInner {
+    gap: 12px;
+    padding: 0 12px;
+  }
+
+  .logo {
+    font-size: 18px;
+  }
+
+  .logoMy {
+    font-size: 13px;
+  }
+
+  .userName {
+    display: none;
+  }
 }

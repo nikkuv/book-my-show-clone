@@ -2,48 +2,52 @@
 
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
-import { useSelector, useDispatch } from "react-redux";
-import { Row, Col, Card, Typography, notification, Input, Tag } from "antd";
+import { Typography, notification, Spin } from "antd";
 import {
   ClockCircleOutlined,
-  SearchOutlined,
   GlobalOutlined,
+  RightOutlined,
 } from "@ant-design/icons";
-import Loader from "@/components/Loader/Loader";
-import ProtectedRoute from "@/components/ProtectedRoute";
-import Header from "@/components/Header/Header";
+import { useSearch } from "@/components/Header/SearchContext";
 import { GetAllMovies } from "../../../services/movies";
-import { showLoading, hideLoading } from "@/redux/loaderSlice";
+import {
+  isNetworkErrorMessage,
+  notifyNetworkError,
+} from "../../../utils/notifyApiError";
 import styles from "./home.module.css";
 
 const { Title, Text } = Typography;
-const { Search } = Input;
 
 export default function BookMyShow() {
   const router = useRouter();
-  const dispatch = useDispatch();
-  const { loading } = useSelector((state) => state.loader);
+  const { query: searchQuery } = useSearch();
   const [movies, setMovies] = useState([]);
-  const [searchQuery, setSearchQuery] = useState("");
-
-  const fetchMovies = async () => {
-    try {
-      dispatch(showLoading());
-      const response = await GetAllMovies();
-      if (response.success) {
-        setMovies(response.data);
-      } else {
-        notification.error({ message: response.message });
-      }
-    } catch (error) {
-      notification.error({ message: error.message });
-    } finally {
-      dispatch(hideLoading());
-    }
-  };
+  const [moviesLoading, setMoviesLoading] = useState(true);
 
   useEffect(() => {
-    fetchMovies();
+    let cancelled = false;
+
+    (async () => {
+      try {
+        const response = await GetAllMovies();
+        if (cancelled) return;
+        if (response.success) {
+          setMovies(response.data);
+        } else {
+          const msg = response.message || "Could not load movies";
+          if (isNetworkErrorMessage(msg)) notifyNetworkError(msg);
+          else notification.error({ message: msg });
+        }
+      } catch (error) {
+        if (cancelled) return;
+        if (isNetworkErrorMessage(error?.message)) notifyNetworkError(error.message);
+        else notification.error({ message: error.message });
+      } finally {
+        if (!cancelled) setMoviesLoading(false);
+      }
+    })();
+
+    return () => { cancelled = true; };
   }, []);
 
   const filteredMovies = movies.filter(
@@ -58,94 +62,61 @@ export default function BookMyShow() {
   };
 
   return (
-    <>
-      {loading ? (
-        <Loader />
+    <div className={styles.page}>
+      <div className={styles.sectionHeader}>
+        <Title level={4} className={styles.sectionTitle}>
+          Recommended Movies
+        </Title>
+        {movies.length > 0 && (
+          <a className={styles.seeAll}>
+            See All <RightOutlined />
+          </a>
+        )}
+      </div>
+
+      {moviesLoading ? (
+        <div className={styles.loadingState}>
+          <Spin size="large" />
+        </div>
       ) : (
-        <ProtectedRoute>
-          <Header />
-          <div className={styles.container}>
-            {/* Hero Section */}
-            <div className={styles.hero}>
-              <Title level={2}>Now Showing</Title>
-              <Text type="secondary">
-                Book your favorite movies at the best theatres
-              </Text>
-            </div>
-
-            {/* Search Bar */}
-            <div className={styles.searchBar}>
-              <Search
-                placeholder="Search movies by title, genre, or language..."
-                prefix={<SearchOutlined />}
-                size="large"
-                allowClear
-                onChange={(e) => setSearchQuery(e.target.value)}
-                className={styles.searchInput}
-              />
-            </div>
-
-            {/* Movies Grid */}
-            <Row gutter={[24, 24]}>
-              {filteredMovies.map((movie) => (
-                <Col xs={12} sm={8} md={6} lg={4} key={movie._id}>
-                  <Card
-                    hoverable
-                    className={styles.movieCard}
-                    cover={
-                      <div className={styles.posterContainer}>
-                        <img
-                          alt={movie.title}
-                          src={movie.poster}
-                          className={styles.poster}
-                        />
-                        <div className={styles.overlay}>
-                          <button
-                            className={styles.bookButton}
-                            onClick={() => handleMovieClick(movie._id)}
-                          >
-                            Book Now
-                          </button>
-                        </div>
-                      </div>
-                    }
-                    onClick={() => handleMovieClick(movie._id)}
-                  >
-                    <Card.Meta
-                      title={movie.title}
-                      description={
-                        <div className={styles.movieMeta}>
-                          <div className={styles.tags}>
-                            <Tag color="blue" size="small">
-                              {movie.genre}
-                            </Tag>
-                          </div>
-                          <div className={styles.info}>
-                            <span>
-                              <GlobalOutlined /> {movie.language}
-                            </span>
-                            <span>
-                              <ClockCircleOutlined /> {movie.duration} min
-                            </span>
-                          </div>
-                        </div>
-                      }
-                    />
-                  </Card>
-                </Col>
-              ))}
-            </Row>
-
-            {filteredMovies.length === 0 && (
-              <div className={styles.noResults}>
-                <Text type="secondary">
-                  No movies found matching your search.
-                </Text>
+        <div className={styles.movieGrid}>
+          {filteredMovies.map((movie) => (
+            <div
+              key={movie._id}
+              className={styles.movieCard}
+              onClick={() => handleMovieClick(movie._id)}
+            >
+              <div className={styles.posterContainer}>
+                <img
+                  alt={movie.title}
+                  src={movie.poster}
+                  className={styles.poster}
+                />
+                <div className={styles.posterOverlay}>
+                  <div className={styles.movieMeta}>
+                    <span><GlobalOutlined /> {movie.language}</span>
+                    <span><ClockCircleOutlined /> {movie.duration} min</span>
+                  </div>
+                </div>
               </div>
-            )}
-          </div>
-        </ProtectedRoute>
+              <div className={styles.cardBody}>
+                <h3 className={styles.movieTitle}>{movie.title}</h3>
+                <span className={styles.genre}>{movie.genre}</span>
+              </div>
+            </div>
+          ))}
+        </div>
       )}
-    </>
+
+      {!moviesLoading && filteredMovies.length === 0 && (
+        <div className={styles.emptyState}>
+          <Text type="secondary">
+            {searchQuery
+              ? "No movies found matching your search."
+              : "No movies available right now."}
+          </Text>
+        </div>
+      )}
+    </div>
   );
 }

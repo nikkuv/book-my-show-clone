@@ -32,7 +32,6 @@ theatreRouter.post(
 );
 theatreRouter.post(
   "/get-all-theatres-by-movie",
-  validateJWTToken,
   getAllTheatresByMovie
 );
 theatreRouter.post("/get-show-by-id", validateJWTToken, getShowById);

@@ -8,7 +8,6 @@ const theatreRouter = require("./routes/theatreRouter");
 const bookingRouter = require("./routes/bookingRouter");
 const imageUploadRouter = require("./routes/imageUploadRouter");
 const { swaggerUi, specs } = require("./config/swagger");
-require("./swagger-docs"); // Load swagger documentation
 const app = express();
 
 app.use(cors({
@@ -44,7 +43,8 @@ app.get('/', (req, res) => {
     `);
 })
 
-app.listen(process.env.PORT, () => {
-    console.log('Server is running on port ' + process.env.PORT);
-    console.log('API Documentation: http://localhost:' + process.env.PORT + '/api-docs');
-})
+const PORT = Number(process.env.PORT) || 5001;
+app.listen(PORT, () => {
+    console.log("Server is running on port " + PORT);
+    console.log("API Documentation: http://localhost:" + PORT + "/api-docs");
+});

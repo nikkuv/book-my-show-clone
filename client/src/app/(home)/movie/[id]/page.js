@@ -22,9 +22,11 @@ import {
 import dayjs from "dayjs";
 import { GetMovieById } from "../../../../../services/movies";
 import { GetAllTheatresByMovie } from "../../../../../services/theatre";
-import ProtectedRoute from "@/components/ProtectedRoute";
-import Header from "@/components/Header/Header";
 import styles from "./movie.module.css";
+import {
+    isNetworkErrorMessage,
+    notifyNetworkError,
+} from "../../../../../utils/notifyApiError";
 
 const { Title, Text, Paragraph } = Typography;
 
@@ -42,10 +44,19 @@ export default function MoviePage() {
             if (response.success) {
                 setMovie(response.data);
             } else {
-                notification.error({ message: response.message });
+                const msg = response.message || "Could not load movie";
+                if (isNetworkErrorMessage(msg)) {
+                    notifyNetworkError(msg);
+                } else {
+                    notification.error({ message: msg });
+                }
             }
         } catch (error) {
-            notification.error({ message: error.message });
+            if (isNetworkErrorMessage(error?.message)) {
+                notifyNetworkError(error.message);
+            } else {
+                notification.error({ message: error.message });
+            }
         }
     };
 
@@ -62,7 +73,11 @@ export default function MoviePage() {
                 setTheatres([]);
             }
         } catch (error) {
-            notification.error({ message: error.message });
+            if (isNetworkErrorMessage(error?.message)) {
+                notifyNetworkError(error.message);
+            } else {
+                notification.error({ message: error.message });
+            }
         } finally {
             setLoading(false);
         }
@@ -88,19 +103,14 @@ export default function MoviePage() {
 
     if (!movie && loading) {
         return (
-            <ProtectedRoute>
-                <Header />
-                <div className={styles.loadingContainer}>
-                    <Spin size="large" />
-                </div>
-            </ProtectedRoute>
+            <div className={styles.loadingContainer}>
+                <Spin size="large" />
+            </div>
         );
     }
 
     return (
-        <ProtectedRoute>
-            <Header />
-            <div className={styles.container}>
+        <div className={styles.container}>
                 {movie && (
                     <>
                         {/* Movie Details Section */}
@@ -194,6 +204,6 @@ export default function MoviePage() {
                     </>
                 )}
             </div>
-        </ProtectedRoute>
+        </div>
     );
 }

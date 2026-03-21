@@ -7,7 +7,10 @@ export const GetAllMovies = async () => {
     );
     return response.data;
   } catch (err) {
-    return err.message;
+    return {
+      success: false,
+      message: err?.message || "Request failed",
+    };
   }
 };
 
@@ -19,7 +22,10 @@ export const DeleteMovie = async (movieId) => {
     );
     return response.data;
   } catch (err) {
-    return err.message;
+    return {
+      success: false,
+      message: err?.message || "Request failed",
+    };
   }
 };
 
@@ -31,7 +37,10 @@ export const AddMovie = async (payload) => {
     );
     return response.data;
   } catch (err) {
-    return err.message;
+    return {
+      success: false,
+      message: err?.message || "Request failed",
+    };
   }
 };
 
@@ -43,7 +52,10 @@ export const UpdateMovie = async (payload) => {
     );
     return response.data;
   } catch (err) {
-    return err.message;
+    return {
+      success: false,
+      message: err?.message || "Request failed",
+    };
   }
 };
 
@@ -54,7 +66,10 @@ export const GetMovieById = async (movieId) => {
     );
     return response.data;
   } catch (err) {
-    return err.message;
+    return {
+      success: false,
+      message: err?.message || "Request failed",
+    };
   }
 };
 

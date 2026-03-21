@@ -24,8 +24,11 @@ import { GetShowById } from "../../../../../services/theatre";
 import { BlockSeats, BookSeats } from "../../../../../services/booking";
 import SeatSelection from "@/components/Booking/SeatSelection";
 import ProtectedRoute from "@/components/ProtectedRoute";
-import Header from "@/components/Header/Header";
 import styles from "./book.module.css";
+import {
+    isNetworkErrorMessage,
+    notifyNetworkError,
+} from "../../../../../utils/notifyApiError";
 import { loadStripe } from "@stripe/stripe-js";
 import { Elements } from "@stripe/react-stripe-js";
 import CheckoutForm from "@/components/Booking/CheckoutForm";
@@ -60,7 +63,11 @@ export default function BookingPage() {
                 notification.error({ message: response.message });
             }
         } catch (error) {
-            notification.error({ message: error.message });
+            if (isNetworkErrorMessage(error?.message)) {
+                notifyNetworkError(error.message);
+            } else {
+                notification.error({ message: error.message });
+            }
         } finally {
             setLoading(false);
         }
@@ -96,7 +103,9 @@ export default function BookingPage() {
             }
             setIsPaymentModalOpen(true);
         } catch (err) {
-            notification.error({ message: err.message || "Failed to block seats" });
+            const m = err.message || "Failed to block seats";
+            if (isNetworkErrorMessage(m)) notifyNetworkError(m);
+            else notification.error({ message: m });
         }
     };
 
@@ -116,7 +125,11 @@ export default function BookingPage() {
                 notification.error({ message: response.message });
             }
         } catch (error) {
-            notification.error({ message: error.message });
+            if (isNetworkErrorMessage(error?.message)) {
+                notifyNetworkError(error.message);
+            } else {
+                notification.error({ message: error.message });
+            }
         } finally {
             setBooking(false);
         }
@@ -142,7 +155,6 @@ export default function BookingPage() {
     if (loading) {
         return (
             <ProtectedRoute>
-                <Header />
                 <div className={styles.loadingContainer}>
                     <Spin size="large" />
                 </div>
@@ -153,7 +165,6 @@ export default function BookingPage() {
     if (bookingSuccess) {
         return (
             <ProtectedRoute>
-                <Header />
                 <div className={styles.container}>
                     <Result
                         status="success"
@@ -181,7 +192,6 @@ export default function BookingPage() {
 
     return (
         <ProtectedRoute>
-            <Header />
             <div className={styles.container}>
                 {show && (
                     <>
