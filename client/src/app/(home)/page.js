@@ -6,7 +6,6 @@ import { Typography, notification, Spin } from "antd";
 import {
   ClockCircleOutlined,
   GlobalOutlined,
-  RightOutlined,
 } from "@ant-design/icons";
 import { useSearch } from "@/components/Header/SearchContext";
 import { GetAllMovies } from "../../../services/movies";
@@ -67,11 +66,6 @@ export default function BookMyShow() {
         <Title level={4} className={styles.sectionTitle}>
           Recommended Movies
         </Title>
-        {movies.length > 0 && (
-          <a className={styles.seeAll}>
-            See All <RightOutlined />
-          </a>
-        )}
       </div>
 
       {moviesLoading ? (

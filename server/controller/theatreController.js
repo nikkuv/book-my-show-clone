@@ -137,23 +137,46 @@ const deleteShow = async (req, res) => {
 const getAllTheatresByMovie = async (req, res) => {
   try {
     const { movie, date } = req.body;
+    if (!movie || !date) {
+      return res.send({
+        success: false,
+        message: "movie and date are required",
+        data: [],
+      });
+    }
+
+    // Match any show on this calendar day (avoids exact Date mismatch from time/timezone)
+    const [y, m, d] = String(date).split("-").map(Number);
+    if (!y || !m || !d) {
+      return res.send({
+        success: false,
+        message: "date must be YYYY-MM-DD",
+        data: [],
+      });
+    }
+    const startOfDay = new Date(Date.UTC(y, m - 1, d, 0, 0, 0, 0));
+    const endOfDay = new Date(Date.UTC(y, m - 1, d, 23, 59, 59, 999));
+
     const shows = await showModel
-      .find({ movie, date })
+      .find({
+        movie,
+        date: { $gte: startOfDay, $lte: endOfDay },
+      })
       .populate("theatre")
       .sort({ createdAt: -1 });
+
     const uniqueTheatres = [];
-    // {TheatreInformation, showinformation}
     shows.forEach((show) => {
-      // check if given theatre is already present in uniquetheatre
+      if (!show.theatre) return;
       const theatre = uniqueTheatres.find(
-        (theatre) => theatre._id == show.theatre._id
+        (t) => String(t._id) === String(show.theatre._id)
       );
       if (!theatre) {
-        // filter and get all shows for given theatre
         const showsForThisTheatre = shows.filter(
-          (showObj) => showObj.theatre._id == show.theatre._id
+          (showObj) =>
+            showObj.theatre &&
+            String(showObj.theatre._id) === String(show.theatre._id)
         );
-        // map theatre and shows and push into unique theatre
         uniqueTheatres.push({
           ...show.theatre._doc,
           shows: showsForThisTheatre,

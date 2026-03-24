@@ -4,8 +4,57 @@
   box-sizing: border-box;
 }
 
+html {
+  background: #ffffff;
+  height: auto;
+  overflow-y: auto;
+}
+
+:root {
+  --bms-red: #f84464;
+  --bms-red-hover: #dc3558;
+  --bms-dark: #1a1a2e;
+  --bms-dark-alt: #2b3148;
+  --bms-green: #1ea83c;
+  --bms-bg: #ffffff;
+  --bms-text: #333;
+  --bms-text-secondary: #666;
+  --bms-border: #e8e8e8;
+}
+
 body {
-  background: #f5f5f5;
-  color: #333;
+  background: var(--bms-bg);
+  color: var(--bms-text);
   -webkit-font-smoothing: antialiased;
+  min-height: 100%;
+  overflow-x: clip;
+  overflow-y: auto;
+}
+
+/* Ant Design primary color override */
+:where(.ant-btn-primary) {
+  background: var(--bms-red) !important;
+  border-color: var(--bms-red) !important;
+}
+:where(.ant-btn-primary):hover {
+  background: var(--bms-red-hover) !important;
+  border-color: var(--bms-red-hover) !important;
+}
+
+:where(.ant-tabs .ant-tabs-tab-active .ant-tabs-tab-btn) {
+  color: var(--bms-red) !important;
+}
+:where(.ant-tabs .ant-tabs-ink-bar) {
+  background: var(--bms-red) !important;
+}
+
+:where(.ant-spin .ant-spin-dot-item) {
+  background-color: var(--bms-red) !important;
+}
+
+:where(a) {
+  color: var(--bms-red);
+}
+:where(a):hover {
+  color: var(--bms-red-hover);
 }

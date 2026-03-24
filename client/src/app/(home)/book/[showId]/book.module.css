@@ -13,7 +13,7 @@
 
 .showInfo {
     border-radius: 12px;
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    background: linear-gradient(135deg, var(--bms-dark) 0%, var(--bms-dark-alt) 100%);
 }
 
 .showInfo :global(.ant-card-body) {
@@ -75,17 +75,19 @@
     height: 50px;
     font-size: 16px;
     font-weight: 600;
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-    border: none;
+    background: var(--bms-red) !important;
+    border-color: var(--bms-red) !important;
     border-radius: 8px;
 }
 
 .bookButton:hover {
-    background: linear-gradient(135deg, #5a6fd6 0%, #6a4190 100%);
+    background: var(--bms-red-hover) !important;
+    border-color: var(--bms-red-hover) !important;
     transform: translateY(-2px);
-    box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
+    box-shadow: 0 4px 12px rgba(248, 68, 100, 0.4);
 }
 
 .bookButton:disabled {
-    background: #d9d9d9;
+    background: #d9d9d9 !important;
+    border-color: #d9d9d9 !important;
 }

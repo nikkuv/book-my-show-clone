@@ -170,9 +170,15 @@ export default function MoviePage() {
                                     <Spin />
                                 </div>
                             ) : theatres.length === 0 ? (
-                                <Text type="secondary">
-                                    No shows available for this date. Please select another date.
-                                </Text>
+                                <div>
+                                    <Text type="secondary">
+                                        No theatres or showtimes for this movie on the date you picked.
+                                    </Text>
+                                    <Text type="secondary" className={styles.emptyHint}>
+                                        Try another date, or add theatres and showtimes in the admin panel
+                                        (Movies / Theatres) so this movie has scheduled shows.
+                                    </Text>
+                                </div>
                             ) : (
                                 <div className={styles.theatreList}>
                                     {theatres.map((theatre) => (
@@ -203,7 +209,6 @@ export default function MoviePage() {
                         </div>
                     </>
                 )}
-            </div>
         </div>
     );
 }

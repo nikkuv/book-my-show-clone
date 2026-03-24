@@ -45,15 +45,15 @@
     flex-direction: column;
     gap: 8px;
     padding: 12px 0;
-    border-top: 1px solid #f0f0f0;
-    border-bottom: 1px solid #f0f0f0;
+    border-top: 1px solid var(--bms-border);
+    border-bottom: 1px solid var(--bms-border);
 }
 
 .detailRow {
     display: flex;
     align-items: center;
     gap: 8px;
-    color: #666;
+    color: var(--bms-text-secondary);
 }
 
 .seatsInfo {
@@ -65,7 +65,7 @@
     justify-content: space-between;
     align-items: center;
     padding-top: 12px;
-    border-top: 1px solid #f0f0f0;
+    border-top: 1px solid var(--bms-border);
 }
 
 .amount {
@@ -76,5 +76,5 @@
 
 .price {
     font-size: 18px;
-    color: #52c41a;
+    color: var(--bms-green);
 }

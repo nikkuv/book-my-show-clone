@@ -9,28 +9,12 @@
 .sectionHeader {
   display: flex;
   align-items: baseline;
-  justify-content: space-between;
   margin-bottom: 20px;
 }
 
 .sectionTitle {
   margin: 0 !important;
   font-weight: 700 !important;
-}
-
-.seeAll {
-  font-size: 14px;
-  font-weight: 600;
-  color: #f84464;
-  cursor: pointer;
-  white-space: nowrap;
-  display: flex;
-  align-items: center;
-  gap: 4px;
-}
-
-.seeAll:hover {
-  color: #dc3558;
 }
 
 /* ── Movie grid ── */

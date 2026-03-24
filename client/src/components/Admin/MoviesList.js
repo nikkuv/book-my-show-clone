@@ -56,7 +56,15 @@ const MoviesList = () => {
       title: "Poster",
       dataIndex: "poster",
       render: (_, record) => {
-        return <img src={record?.poster} alt="Poster" height="60" width="80" />;
+        return (
+          <img
+            src={record?.poster}
+            alt="Poster"
+            height={60}
+            width={80}
+            style={{ objectFit: "cover", borderRadius: 4 }}
+          />
+        );
       },
     },
     {

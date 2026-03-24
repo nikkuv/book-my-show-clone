@@ -18,9 +18,9 @@
 .screenCurve {
     width: 100%;
     height: 8px;
-    background: linear-gradient(90deg, #667eea 0%, #764ba2 100%);
+    background: linear-gradient(90deg, var(--bms-dark) 0%, var(--bms-dark-alt) 100%);
     border-radius: 50% 50% 0 0;
-    box-shadow: 0 -4px 20px rgba(102, 126, 234, 0.5);
+    box-shadow: 0 -4px 20px rgba(26, 26, 46, 0.4);
     margin-bottom: 8px;
 }
 
@@ -66,8 +66,8 @@
 
 .available {
     background: #e8f5e9;
-    color: #2e7d32;
-    border: 2px solid #4caf50;
+    color: var(--bms-green);
+    border: 2px solid var(--bms-green);
 }
 
 .available:hover {
@@ -76,9 +76,9 @@
 }
 
 .selected {
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    background: var(--bms-red);
     color: white;
-    border: 2px solid #5c6bc0;
+    border: 2px solid var(--bms-red-hover);
     transform: scale(1.05);
 }
 
