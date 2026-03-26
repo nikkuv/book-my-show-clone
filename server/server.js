@@ -11,8 +11,7 @@ const { swaggerUi, specs } = require("./config/swagger");
 const app = express();
 
 app.use(cors({
-    origin: 'http://localhost:3000',
-    // TODO: read about this parameter for CORS
+    origin: ['http://localhost:3000', 'http://localhost:3001'],
     credentials: true
 }));
 app.use(cookieParser());

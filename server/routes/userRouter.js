@@ -13,6 +13,7 @@ userRouter.post("/login", loginUser);
 
 //protected API route
 userRouter.get("/get-current-user", validateJWTToken, getCurrentUser);
-userRouter.post("/logout", validateJWTToken, logoutUser);
+// No JWT required: always clear cookie (avoids "Invalid Token" if token expired or double-submit)
+userRouter.post("/logout", logoutUser);
 
 module.exports = userRouter;

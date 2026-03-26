@@ -6,6 +6,7 @@ const {
     getBookingsByUser,
     cancelBooking,
     makePayment,
+    verifyPayment,
 } = require("../controller/bookingController");
 const { validateJWTToken } = require("../middleware/authmiddleware");
 
@@ -23,5 +24,6 @@ bookingRouter.post("/cancel-booking", validateJWTToken, cancelBooking);
 
 // Make Payment
 bookingRouter.post("/make-payment", validateJWTToken, makePayment);
+bookingRouter.post("/verify-payment", validateJWTToken, verifyPayment);
 
 module.exports = bookingRouter;

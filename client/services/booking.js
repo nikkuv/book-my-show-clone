@@ -22,7 +22,7 @@ export const BookSeats = async (payload) => {
         );
         return response.data;
     } catch (error) {
-        return error.response;
+        return error.response?.data || { success: false, message: error.message };
     }
 };
 
@@ -58,6 +58,18 @@ export const MakePayment = async (payload) => {
         );
         return response.data;
     } catch (error) {
-        return error.response;
+        return error.response?.data || { success: false, message: error.message };
+    }
+};
+
+export const VerifyPayment = async (payload) => {
+    try {
+        const response = await axiosInstance.post(
+            "/app/v1/bookings/verify-payment",
+            payload
+        );
+        return response.data;
+    } catch (error) {
+        return error.response?.data || { success: false, message: error.message };
     }
 };

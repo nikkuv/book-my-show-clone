@@ -1,9 +1,10 @@
 "use client";
 
+import { Suspense } from "react";
 import { Form, Formik } from "formik";
 import Link from "next/link";
-import { useRouter } from "next/navigation";
-import { Input, Card, Typography, Flex, Button, notification } from "antd";
+import { useRouter, useSearchParams } from "next/navigation";
+import { Input, Card, Typography, Flex, Button, notification, Spin } from "antd";
 import * as Yup from "yup";
 import styles from "../auth.module.css";
 import { LoginUser } from "../../../../services/user";
@@ -12,8 +13,17 @@ import { setUser } from "@/redux/usersSlice";
 
 const { Text } = Typography;
 
-const Login = () => {
+function safeRedirectPath(raw) {
+  if (!raw || typeof raw !== "string") return null;
+  const t = raw.trim();
+  if (!t.startsWith("/") || t.startsWith("//")) return null;
+  if (t.includes("://")) return null;
+  return t;
+}
+
+const LoginForm = () => {
   const router = useRouter();
+  const searchParams = useSearchParams();
   const dispatch = useDispatch();
 
   const initialValues = {
@@ -38,7 +48,10 @@ const Login = () => {
           message: res.message,
         });
         dispatch(setUser(res.data));
-        if (res.data.isAdmin) {
+        const next = safeRedirectPath(searchParams.get("redirect"));
+        if (next) {
+          router.push(next);
+        } else if (res.data.isAdmin) {
           router.push("/admin");
         } else {
           router.push("/");
@@ -50,7 +63,7 @@ const Login = () => {
       }
     } catch (err) {
       notification.error({
-        message: err.message,
+        message: err?.message || "Something went wrong",
       });
     }
   };
@@ -115,4 +128,16 @@ const Login = () => {
   );
 };
 
-export default Login;
+export default function LoginPage() {
+  return (
+    <Suspense
+      fallback={
+        <div style={{ display: "flex", justifyContent: "center", padding: 48 }}>
+          <Spin size="large" />
+        </div>
+      }
+    >
+      <LoginForm />
+    </Suspense>
+  );
+}

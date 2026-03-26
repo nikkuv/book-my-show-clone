@@ -20,6 +20,7 @@ const validateAdmin = (req, res, next) => {
       return res.status(400).send({ success: false, message: "Not an admin" });
     }
     req.body.userId = decoded.userId;
+    req.isAdmin = true;
     next();
   } catch (error) {
     res.status(400).send({ success: false, message: "Invalid Token" });

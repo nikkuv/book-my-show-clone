@@ -21,6 +21,16 @@ const addTheatre = async (req, res) => {
 
 const updateTheatre = async (req, res) => {
   try {
+    const theatre = await Theatre.findById(req.body.theatreId);
+    if (!theatre) {
+      return res.send({ success: false, message: "Theatre not found" });
+    }
+    if (
+      !req.isAdmin &&
+      String(theatre.owner) !== String(req.body.userId)
+    ) {
+      return res.send({ success: false, message: "Unauthorized action" });
+    }
     await Theatre.findByIdAndUpdate(req.body.theatreId, req.body);
     res.send({
       success: true,
@@ -36,6 +46,16 @@ const updateTheatre = async (req, res) => {
 
 const deleteTheatre = async (req, res) => {
   try {
+    const theatre = await Theatre.findById(req.body.theatreId);
+    if (!theatre) {
+      return res.send({ success: false, message: "Theatre not found" });
+    }
+    if (
+      !req.isAdmin &&
+      String(theatre.owner) !== String(req.body.userId)
+    ) {
+      return res.send({ success: false, message: "Unauthorized action" });
+    }
     await Theatre.findByIdAndDelete(req.body.theatreId);
     res.send({
       success: true,
@@ -84,6 +104,22 @@ const getAllTheatresByOwnerId = async (req, res) => {
 
 const addShowToTheatre = async (req, res) => {
   try {
+    const theatre = await Theatre.findById(req.body.theatre);
+    if (!theatre) {
+      return res.send({ success: false, message: "Theatre not found" });
+    }
+    if (
+      !req.isAdmin &&
+      String(theatre.owner) !== String(req.body.userId)
+    ) {
+      return res.send({ success: false, message: "Unauthorized action" });
+    }
+    if (!theatre.isActive) {
+      return res.send({
+        success: false,
+        message: "Theatre must be approved before adding shows",
+      });
+    }
     const newShow = new show(req.body);
     await newShow.save();
     res.send({
@@ -121,6 +157,17 @@ const getAllShowsByTheatre = async (req, res) => {
 
 const deleteShow = async (req, res) => {
   try {
+    const showDoc = await show.findById(req.body.showId);
+    if (!showDoc) {
+      return res.send({ success: false, message: "Show not found" });
+    }
+    const theatre = await Theatre.findById(showDoc.theatre);
+    if (
+      !theatre ||
+      (!req.isAdmin && String(theatre.owner) !== String(req.body.userId))
+    ) {
+      return res.send({ success: false, message: "Unauthorized action" });
+    }
     await show.findByIdAndDelete(req.body.showId);
     res.send({
       success: true,

@@ -1,13 +1,19 @@
 "use client";
 
-import { Flex, Table, message, notification, Button } from "antd";
+import { Flex, Table, message, notification, Button, Typography } from "antd";
 import React, { useEffect, useState } from "react";
 import { useDispatch } from "react-redux";
 import { showLoading, hideLoading } from "@/redux/loaderSlice";
 import { GetAllTheatres, UpdateTheatre } from "../../../services/theatre";
+import TheatreForm from "../Profile/TheatreForm";
+
+const { Title } = Typography;
 
 const TheatreList = () => {
   const [theatres, setTheatres] = useState([]);
+  const [showTheatreFormModal, setShowTheatreFormModal] = useState(false);
+  const [formType, setFormType] = useState("add");
+  const [selectedTheatre, setSelectedTheatre] = useState(null);
   const dispatch = useDispatch();
 
   const getData = async () => {
@@ -129,7 +135,31 @@ const TheatreList = () => {
   
   return (
     <div>
-      <Table columns={columns} dataSource={theatres} />
+      <Flex align="center" justify="space-between" style={{ marginBottom: 16 }}>
+        <Title level={4} style={{ margin: 0 }}>
+          Theatres
+        </Title>
+        <Button
+          type="primary"
+          onClick={() => {
+            setFormType("add");
+            setSelectedTheatre(null);
+            setShowTheatreFormModal(true);
+          }}
+        >
+          Add theatre
+        </Button>
+      </Flex>
+      <Table columns={columns} dataSource={theatres} rowKey="_id" />
+      {showTheatreFormModal && (
+        <TheatreForm
+          showTheatreFormModal={showTheatreFormModal}
+          setShowTheatreFormModal={setShowTheatreFormModal}
+          selectedTheatre={selectedTheatre}
+          getData={getData}
+          formType={formType}
+        />
+      )}
     </div>
   );
 };

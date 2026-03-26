@@ -8,7 +8,7 @@ export const AddTheatre = async (payload) => {
     );
     return response.data;
   } catch (error) {
-    return error.response;
+    return error.response?.data || { success: false, message: error.message };
   }
 };
 
@@ -21,7 +21,7 @@ export const GetAllTheatresByOwner = async (payload) => {
     );
     return response.data;
   } catch (error) {
-    return error.response;
+    return error.response?.data || { success: false, message: error.message };
   }
 };
 
@@ -33,7 +33,7 @@ export const UpdateTheatre = async (payload) => {
     );
     return response.data;
   } catch (error) {
-    return error.response;
+    return error.response?.data || { success: false, message: error.message };
   }
 };
 
@@ -45,7 +45,7 @@ export const DeleteTheatre = async (payload) => {
     );
     return response.data;
   } catch (error) {
-    return error.response;
+    return error.response?.data || { success: false, message: error.message };
   }
 };
 
@@ -57,7 +57,7 @@ export const GetAllTheatres = async () => {
     );
     return response.data;
   } catch (error) {
-    return error.response;
+    return error.response?.data || { success: false, message: error.message };
   }
 };
 
@@ -69,7 +69,7 @@ export const AddShow = async (payload) => {
     );
     return response.data;
   } catch (error) {
-    return error.response;
+    return error.response?.data || { success: false, message: error.message };
   }
 };
 
@@ -81,7 +81,7 @@ export const GetAllShowsByTheatre = async (payload) => {
     );
     return response.data;
   } catch (error) {
-    return error.response;
+    return error.response?.data || { success: false, message: error.message };
   }
 };
 
@@ -93,7 +93,7 @@ export const DeleteShow = async (payload) => {
     );
     return response.data;
   } catch (error) {
-    return error.response;
+    return error.response?.data || { success: false, message: error.message };
   }
 };
 
@@ -105,7 +105,7 @@ export const GetAllTheatresByMovie = async (payload) => {
     );
     return response.data;
   } catch (error) {
-    return error.response;
+    return error.response?.data || { success: false, message: error.message };
   }
 };
 

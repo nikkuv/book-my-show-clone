@@ -1,5 +1,7 @@
 const bookingModel = require("../models/bookingModal");
 const showModel = require("../models/showModal");
+const crypto = require("crypto");
+const Razorpay = require("razorpay");
 
 // Helper function to clean expired blocks (older than 10 minutes)
 const cleanExpiredBlocks = async (showId) => {
@@ -13,18 +15,8 @@ const cleanExpiredBlocks = async (showId) => {
         (block) => block.blockedAt > tenMinutesAgo
     );
     
-    // Get seats that were in expired blocks
-    const expiredBlockSeats = show.blockedSeats
-        .filter((block) => block.blockedAt <= tenMinutesAgo)
-        .map((block) => block.seat);
-
-    // Remove expired blocks and their seats from bookedSeats
-    if (expiredBlockSeats.length > 0) {
-        await showModel.findByIdAndUpdate(showId, {
-            blockedSeats: validBlocks,
-            $pull: { bookedSeats: { $in: expiredBlockSeats } },
-        });
-    } else if (show.blockedSeats.length !== validBlocks.length) {
+    // Remove expired temporary blocks only
+    if (show.blockedSeats.length !== validBlocks.length) {
         // Update blockedSeats even if no seats to remove from bookedSeats
         await showModel.findByIdAndUpdate(showId, {
             blockedSeats: validBlocks,
@@ -89,7 +81,7 @@ const blockSeats = async (req, res) => {
             (block) => block.userId.toString() === userId && seats.includes(block.seat)
         );
         
-        // Add new blocks and update bookedSeats
+        // Add new temporary blocks only (do not mark as booked yet)
         const newBlocks = seats.map((seat) => ({
             seat,
             userId,
@@ -102,12 +94,8 @@ const blockSeats = async (req, res) => {
         );
         updatedBlockedSeats.push(...newBlocks);
 
-        // Add seats to bookedSeats if not already there
-        const seatsToAdd = seats.filter((seat) => !show.bookedSeats.includes(seat));
-
         await showModel.findByIdAndUpdate(showId, {
             blockedSeats: updatedBlockedSeats,
-            $addToSet: { bookedSeats: { $each: seatsToAdd } },
         });
 
         res.send({
@@ -173,14 +161,12 @@ const bookSeats = async (req, res) => {
             });
         }
 
-        // Remove blocks for these seats (they're being confirmed)
-        // The seats are already in bookedSeats from the block operation, so we just remove the blocks
+        // Remove temporary blocks for these seats and confirm into bookedSeats
         const updatedBlockedSeats = show.blockedSeats.filter(
             (block) => !(block.userId.toString() === userId && seats.includes(block.seat))
         );
 
-        // Atomic Update: Remove from blockedSeats (seats already in bookedSeats from blocking)
-        // Also verify that seats are still blocked by this user (not taken by someone else)
+        // Atomic update and verify seats are still blocked by this user
         const seatsStillBlockedByUser = seats.every((seat) => {
             const block = show.blockedSeats.find(
                 (b) => b.seat === seat && b.userId.toString() === userId && b.blockedAt > tenMinutesAgo
@@ -198,7 +184,8 @@ const bookSeats = async (req, res) => {
         const updatedShow = await showModel.findByIdAndUpdate(
             showId,
             {
-                blockedSeats: updatedBlockedSeats, // Remove blocks - seats remain in bookedSeats
+                blockedSeats: updatedBlockedSeats,
+                $addToSet: { bookedSeats: { $each: seats } },
             },
             { new: true }
         );
@@ -291,9 +278,14 @@ const cancelBooking = async (req, res) => {
         // Update booking status
         await bookingModel.findByIdAndUpdate(bookingId, { status: "cancelled" });
 
-        // Release seats from the show
+        // Release seats from the show and clear any stale blocks for those seats
+        const showDoc = await showModel.findById(booking.show);
+        const updatedBlockedSeats = (showDoc?.blockedSeats || []).filter(
+            (block) => !booking.seats.includes(block.seat)
+        );
         await showModel.findByIdAndUpdate(booking.show, {
             $pull: { bookedSeats: { $in: booking.seats } },
+            blockedSeats: updatedBlockedSeats,
         });
 
         res.send({ success: true, message: "Booking cancelled successfully" });
@@ -302,31 +294,88 @@ const cancelBooking = async (req, res) => {
     }
 };
 
-// makePayment - Create Stripe Payment Intent
+// makePayment - Create Razorpay Order
 const makePayment = async (req, res) => {
     try {
-        // Lazy initialization of Stripe - only when makePayment is called
-        if (!process.env.STRIPE_SECRET_KEY) {
-            return res.status(500).send({
+        const { amount } = req.body;
+        if (!amount || Number(amount) <= 0) {
+            return res.status(400).send({
                 success: false,
-                message: "Stripe API key is not configured. Please set STRIPE_SECRET_KEY in your environment variables.",
+                message: "Valid amount is required",
             });
         }
 
-        const stripe = require("stripe")(process.env.STRIPE_SECRET_KEY);
-        const { amount } = req.body;
-        const paymentIntent = await stripe.paymentIntents.create({
-            amount: amount,
-            currency: "inr",
+        if (!process.env.RAZORPAY_API_KEY || !process.env.RAZORPAY_API_SECRET) {
+            return res.status(500).send({
+                success: false,
+                message: "Razorpay keys are not configured. Please set RAZORPAY_API_KEY and RAZORPAY_API_SECRET.",
+            });
+        }
+
+        const razorpay = new Razorpay({
+            key_id: process.env.RAZORPAY_API_KEY,
+            key_secret: process.env.RAZORPAY_API_SECRET,
         });
-        const transactionId = paymentIntent.client_secret;
+
+        const order = await razorpay.orders.create({
+            amount: Math.round(Number(amount)),
+            currency: "INR",
+            receipt: `rcpt_${Date.now()}`,
+        });
+
         res.send({
             success: true,
-            message: "Payment Intent created",
-            data: transactionId,
+            message: "Razorpay order created",
+            data: {
+                key: process.env.RAZORPAY_API_KEY,
+                orderId: order.id,
+                amount: order.amount,
+                currency: order.currency,
+            },
         });
     } catch (error) {
         res.status(500).send({ success: false, message: error.message });
+    }
+};
+
+// verifyPayment - Verify Razorpay payment signature
+const verifyPayment = async (req, res) => {
+    try {
+        const { razorpay_order_id, razorpay_payment_id, razorpay_signature } = req.body;
+
+        if (!razorpay_order_id || !razorpay_payment_id || !razorpay_signature) {
+            return res.status(400).send({
+                success: false,
+                message: "Payment verification fields are required",
+            });
+        }
+
+        if (!process.env.RAZORPAY_API_SECRET) {
+            return res.status(500).send({
+                success: false,
+                message: "Razorpay secret is not configured",
+            });
+        }
+
+        const expectedSignature = crypto
+            .createHmac("sha256", process.env.RAZORPAY_API_SECRET)
+            .update(`${razorpay_order_id}|${razorpay_payment_id}`)
+            .digest("hex");
+
+        const isValid = expectedSignature === razorpay_signature;
+        if (!isValid) {
+            return res.status(400).send({
+                success: false,
+                message: "Invalid payment signature",
+            });
+        }
+
+        return res.send({
+            success: true,
+            message: "Payment verified successfully",
+        });
+    } catch (error) {
+        return res.status(500).send({ success: false, message: error.message });
     }
 };
 
@@ -336,4 +385,5 @@ module.exports = {
     getBookingsByUser,
     cancelBooking,
     makePayment,
+    verifyPayment,
 };

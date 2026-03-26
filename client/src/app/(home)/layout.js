@@ -13,7 +13,11 @@ export default function HomeLayout({ children }) {
   const hydrated = useRef(false);
 
   useEffect(() => {
-    if (user || hydrated.current) return;
+    if (user) {
+      hydrated.current = true;
+      return;
+    }
+    if (hydrated.current) return;
     hydrated.current = true;
 
     (async () => {

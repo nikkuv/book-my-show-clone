@@ -1,7 +1,8 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { useParams, useRouter } from "next/navigation";
+import { useParams, useRouter, usePathname } from "next/navigation";
+import { useSelector } from "react-redux";
 import {
     Typography,
     Row,
@@ -33,6 +34,8 @@ const { Title, Text, Paragraph } = Typography;
 export default function MoviePage() {
     const params = useParams();
     const router = useRouter();
+    const pathname = usePathname();
+    const { user } = useSelector((state) => state.users);
     const [movie, setMovie] = useState(null);
     const [theatres, setTheatres] = useState([]);
     const [selectedDate, setSelectedDate] = useState(dayjs());
@@ -100,6 +103,8 @@ export default function MoviePage() {
     const handleShowClick = (showId) => {
         router.push(`/book/${showId}`);
     };
+
+    const loginRedirect = `/login?redirect=${encodeURIComponent(pathname || `/movie/${params.id}`)}`;
 
     if (!movie && loading) {
         return (
@@ -188,19 +193,46 @@ export default function MoviePage() {
                                                 <Text type="secondary">{theatre.address}</Text>
                                             </div>
                                             <div className={styles.showTimes}>
-                                                {theatre.shows?.map((show) => (
-                                                    <Button
-                                                        key={show._id}
-                                                        type="default"
-                                                        className={styles.showButton}
-                                                        onClick={() => handleShowClick(show._id)}
-                                                    >
-                                                        {show.time}
-                                                        <span className={styles.price}>
-                                                            ₹{show.ticketPrice}
-                                                        </span>
-                                                    </Button>
-                                                ))}
+                                                {user ? (
+                                                    theatre.shows?.map((show) => (
+                                                        <Button
+                                                            key={show._id}
+                                                            type="default"
+                                                            className={styles.showButton}
+                                                            onClick={() =>
+                                                                handleShowClick(show._id)
+                                                            }
+                                                        >
+                                                            {show.time}
+                                                            <span className={styles.price}>
+                                                                ₹{show.ticketPrice}
+                                                            </span>
+                                                        </Button>
+                                                    ))
+                                                ) : (
+                                                    <>
+                                                        {theatre.shows?.map((show) => (
+                                                            <div
+                                                                key={show._id}
+                                                                className={styles.guestShowSlot}
+                                                            >
+                                                                <span className={styles.guestTime}>
+                                                                    {show.time}
+                                                                </span>
+                                                                <span className={styles.guestPrice}>
+                                                                    ₹{show.ticketPrice}
+                                                                </span>
+                                                            </div>
+                                                        ))}
+                                                        <Button
+                                                            type="primary"
+                                                            className={styles.signInToBook}
+                                                            onClick={() => router.push(loginRedirect)}
+                                                        >
+                                                            Sign in to book
+                                                        </Button>
+                                                    </>
+                                                )}
                                             </div>
                                         </Card>
                                     ))}

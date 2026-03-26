@@ -34,26 +34,45 @@ function ProtectedRoute({ children }) {
           ? response
           : response?.message || "Session could not be verified";
 
-      if (isNetworkErrorMessage(msg)) {
-        notifyNetworkError(msg);
-      } else {
-        message.error({ content: msg, key: "session-msg" });
+      // Guest / expired cookie: redirect quietly — no "Invalid Token" spam
+      const quietAuth =
+        !msg ||
+        String(msg).trim() === "" ||
+        msg === "Invalid Token";
+
+      if (!quietAuth) {
+        if (isNetworkErrorMessage(msg)) {
+          notifyNetworkError(msg);
+        } else {
+          message.error({ content: msg, key: "session-msg" });
+        }
       }
       router.push("/login");
     } catch (error) {
       dispatch(hideLoading());
       dispatch(setUser(null));
-      if (isNetworkErrorMessage(error?.message)) {
-        notifyNetworkError(error.message);
-      } else {
-        message.error({ content: error.message, key: "session-msg" });
+      const errMsg = error?.message || "";
+      const quiet =
+        !errMsg ||
+        errMsg === "Invalid Token" ||
+        errMsg.includes("Network Error");
+      if (!quiet && isNetworkErrorMessage(errMsg)) {
+        notifyNetworkError(errMsg);
+      } else if (!quiet) {
+        message.error({ content: errMsg, key: "session-msg" });
       }
       router.push("/login");
     }
   };
 
+  // When user exists (e.g. Redux persist), mark session as checked so logout → null
+  // does not trigger getPresentUser() after the cookie was already cleared.
   useEffect(() => {
-    if (user || authCheckStarted.current) return;
+    if (user) {
+      authCheckStarted.current = true;
+      return;
+    }
+    if (authCheckStarted.current) return;
     authCheckStarted.current = true;
     getPresentUser();
   }, [user]);

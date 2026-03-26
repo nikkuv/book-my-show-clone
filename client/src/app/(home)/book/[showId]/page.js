@@ -11,7 +11,6 @@ import {
     Spin,
     Divider,
     Tag,
-    Modal,
     Result,
 } from "antd";
 import {
@@ -21,7 +20,12 @@ import {
 } from "@ant-design/icons";
 import dayjs from "dayjs";
 import { GetShowById } from "../../../../../services/theatre";
-import { BlockSeats, BookSeats } from "../../../../../services/booking";
+import {
+    BlockSeats,
+    BookSeats,
+    MakePayment,
+    VerifyPayment,
+} from "../../../../../services/booking";
 import SeatSelection from "@/components/Booking/SeatSelection";
 import ProtectedRoute from "@/components/ProtectedRoute";
 import styles from "./book.module.css";
@@ -29,16 +33,8 @@ import {
     isNetworkErrorMessage,
     notifyNetworkError,
 } from "../../../../../utils/notifyApiError";
-import { loadStripe } from "@stripe/stripe-js";
-import { Elements } from "@stripe/react-stripe-js";
-import CheckoutForm from "@/components/Booking/CheckoutForm";
 
 const { Title, Text } = Typography;
-
-// Initialize Stripe
-const stripePromise = loadStripe(
-    process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY || ""
-);
 
 const BLOCK_DURATION_MINUTES = 10;
 
@@ -51,7 +47,6 @@ export default function BookingPage() {
     const [loading, setLoading] = useState(true);
     const [booking, setBooking] = useState(false);
     const [bookingSuccess, setBookingSuccess] = useState(false);
-    const [isPaymentModalOpen, setIsPaymentModalOpen] = useState(false);
 
     const fetchShow = async () => {
         try {
@@ -77,6 +72,18 @@ export default function BookingPage() {
         fetchShow();
     }, [params.showId]);
 
+    const loadRazorpayScript = () =>
+        new Promise((resolve) => {
+            if (typeof window === "undefined") return resolve(false);
+            if (window.Razorpay) return resolve(true);
+            const script = document.createElement("script");
+            script.src = "https://checkout.razorpay.com/v1/checkout.js";
+            script.async = true;
+            script.onload = () => resolve(true);
+            script.onerror = () => resolve(false);
+            document.body.appendChild(script);
+        });
+
     const handleBookClick = async () => {
         if (selectedSeats.length === 0) {
             notification.warning({ message: "Please select at least one seat" });
@@ -87,6 +94,7 @@ export default function BookingPage() {
             return;
         }
         try {
+            setBooking(true);
             const blockResponse = await BlockSeats({
                 showId: params.showId,
                 seats: selectedSeats,
@@ -101,11 +109,67 @@ export default function BookingPage() {
                 });
                 return;
             }
-            setIsPaymentModalOpen(true);
+
+            const scriptLoaded = await loadRazorpayScript();
+            if (!scriptLoaded) {
+                notification.error({
+                    message: "Unable to load Razorpay checkout. Please try again.",
+                });
+                return;
+            }
+
+            const paymentResponse = await MakePayment({
+                amount: totalAmount * 100, // INR to paise
+            });
+
+            if (!paymentResponse.success) {
+                notification.error({
+                    message: paymentResponse.message || "Could not initiate payment",
+                });
+                return;
+            }
+
+            setBooking(false);
+            const options = {
+                key: paymentResponse.data.key,
+                amount: paymentResponse.data.amount,
+                currency: paymentResponse.data.currency,
+                order_id: paymentResponse.data.orderId,
+                name: "BookMyShow Clone",
+                description: `${show?.movie?.title || "Movie"} tickets`,
+                prefill: {
+                    name: user?.name || "",
+                    email: user?.email || "",
+                },
+                theme: { color: "#f84464" },
+                modal: {
+                    ondismiss: () => {
+                        notification.info({
+                            message:
+                                "Payment cancelled. Seats are blocked for up to 10 minutes.",
+                        });
+                    },
+                },
+                handler: async (response) => {
+                    const verifyResponse = await VerifyPayment(response);
+                    if (!verifyResponse.success) {
+                        notification.error({
+                            message:
+                                verifyResponse.message || "Payment verification failed",
+                        });
+                        return;
+                    }
+                    await onPaymentSuccess(response.razorpay_payment_id);
+                },
+            };
+            const razorpay = new window.Razorpay(options);
+            razorpay.open();
         } catch (err) {
             const m = err.message || "Failed to block seats";
             if (isNetworkErrorMessage(m)) notifyNetworkError(m);
             else notification.error({ message: m });
+        } finally {
+            setBooking(false);
         }
     };
 
@@ -120,7 +184,6 @@ export default function BookingPage() {
 
             if (response.success) {
                 setBookingSuccess(true);
-                setIsPaymentModalOpen(false);
             } else {
                 notification.error({ message: response.message });
             }
@@ -176,7 +239,7 @@ export default function BookingPage() {
                             <Button
                                 type="primary"
                                 key="bookings"
-                                onClick={() => router.push("/profile")}
+                                onClick={() => router.push("/bookings")}
                             >
                                 View My Bookings
                             </Button>,
@@ -268,27 +331,14 @@ export default function BookingPage() {
                                 type="primary"
                                 size="large"
                                 block
+                                loading={booking}
                                 className={styles.bookButton}
                                 onClick={handleBookClick}
-                                disabled={selectedSeats.length === 0}
+                                disabled={selectedSeats.length === 0 || booking}
                             >
                                 Book Now
                             </Button>
                         </Card>
-
-                        <Modal
-                            title="Complete Payment"
-                            open={isPaymentModalOpen}
-                            onCancel={() => setIsPaymentModalOpen(false)}
-                            footer={null}
-                        >
-                            <Elements stripe={stripePromise}>
-                                <CheckoutForm
-                                    totalAmount={totalAmount}
-                                    onSuccess={onPaymentSuccess}
-                                />
-                            </Elements>
-                        </Modal>
                     </>
                 )}
             </div>

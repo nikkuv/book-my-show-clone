@@ -1,7 +1,8 @@
+"use client";
+
 import { Tabs } from "antd";
 import ProtectedRoute from "@/components/ProtectedRoute";
 import Container from "@/components/Container/Container";
-import TheatreList from "@/components/Profile/TheatreList";
 import BookingsList from "@/components/Booking/BookingsList";
 
 const Profile = () => {
@@ -10,11 +11,6 @@ const Profile = () => {
       key: "1",
       label: "Bookings",
       children: <BookingsList />,
-    },
-    {
-      key: "2",
-      label: "Apply for theatre",
-      children: <TheatreList />,
     },
   ];
 

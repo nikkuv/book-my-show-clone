@@ -13,11 +13,13 @@
 
 .showInfo {
     border-radius: 12px;
-    background: linear-gradient(135deg, var(--bms-dark) 0%, var(--bms-dark-alt) 100%);
+    background: #ffffff;
+    border: 1px solid var(--bms-border, #e8e8e8);
+    box-shadow: 0 2px 12px rgba(0, 0, 0, 0.06);
 }
 
 .showInfo :global(.ant-card-body) {
-    color: white;
+    color: var(--bms-text, #333);
 }
 
 .showHeader {
@@ -28,8 +30,8 @@
     gap: 16px;
 }
 
-.movieInfo h3 {
-    color: white !important;
+.movieInfo :global(h3.ant-typography) {
+    color: var(--bms-text, #333) !important;
     margin-bottom: 8px;
 }
 
@@ -48,11 +50,16 @@
     display: flex;
     align-items: center;
     gap: 8px;
-    color: rgba(255, 255, 255, 0.9);
+    color: var(--bms-text-secondary, #666);
 }
 
-.detailItem span {
-    color: rgba(255, 255, 255, 0.9) !important;
+.detailItem :global(.anticon) {
+    color: var(--bms-text-secondary, #666);
+    font-size: 16px;
+}
+
+.detailItem :global(.ant-typography) {
+    color: var(--bms-text, #333) !important;
 }
 
 .summary {

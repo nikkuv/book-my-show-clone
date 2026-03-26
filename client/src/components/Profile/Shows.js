@@ -278,14 +278,14 @@ const Shows = ({ openShowsModal, setOpenShowsModal, theatre }) => {
                       placeholder="movie"
                       value={values.movie}
                       onChange={(value) => setFieldValue("movie", value)}
+                      options={movies.map((movie) => ({
+                        label: movie.title,
+                        value: movie._id,
+                      }))}
                       className={
                         errors.movie && touched.movie ? styles.error : null
                       }
-                    >
-                      {movies.map((movie) => (
-                        <option key={movie._id} value={movie._id}>{movie.title}</option>
-                      ))}
-                    </Select>
+                    />
                     {errors.movie && touched.movie && (
                       <Text type="danger">{errors.movie}</Text>
                     )}
